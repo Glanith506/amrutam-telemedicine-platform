@@ -15,10 +15,12 @@ This is a separation of source folders; a second server is not needed.
  ## Demo Video
 
 [Watch the project demo][(https://drive.google.com/file/d/1zlBcB1Cei6qauURfe5nTGKflwqsQAiFj/view?usp=drive_link)]
-## Existing installation
 
-If you are updating an existing local installation, see
+## Updating an existing installation
+
+If you have an older version of this project, follow the steps in
 [UPDATE_EXISTING_PROJECT.md](UPDATE_EXISTING_PROJECT.md).
+
 Keep your existing `.env` file and database volume.
 
 ## Folder map
