@@ -12,6 +12,9 @@ Frontend code is in **frontend/**. Python backend code is in **backend/**.
 FastAPI serves the frontend and API together at http://localhost:8000/.
 This is a separation of source folders; a second server is not needed.
 
+ ## Demo Video
+
+[Watch the project demo][(https://drive.google.com/file/d/1zlBcB1Cei6qauURfe5nTGKflwqsQAiFj/view?usp=drive_link)]
 ## Existing installation
 
 If you are updating an existing local installation, see
