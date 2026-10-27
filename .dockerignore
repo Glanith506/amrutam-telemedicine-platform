@@ -1,0 +1,12 @@
+.env
+.venv
+.git
+tests
+__pycache__
+
+node_modules/
+
+**/node_modules
+**/__pycache__
+frontend/tests
+.mfa-fix-backup/

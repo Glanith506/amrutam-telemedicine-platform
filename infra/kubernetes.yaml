@@ -1,0 +1,76 @@
+# TEMPLATE ONLY: replace image, secrets, database URL; apply init-db separately.
+# Secrets must be created externally; never commit real values here.
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: amrutam-api}
+spec:
+  replicas: 2
+  selector:
+    matchLabels: {app: amrutam-api}
+  template:
+    metadata:
+      labels: {app: amrutam-api}
+    spec:
+      automountServiceAccountToken: false
+      securityContext: {runAsNonRoot: true, runAsUser: 1000, runAsGroup: 1000, fsGroup: 1000}
+      containers:
+        - name: api
+          image: YOUR_REGISTRY/amrutam:YOUR_IMMUTABLE_TAG
+          ports: [{containerPort: 8000}]
+          envFrom: [{secretRef: {name: amrutam-runtime}}]
+          resources:
+            requests: {cpu: 250m, memory: 256Mi}
+            limits: {cpu: '1', memory: 512Mi}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: {drop: [ALL]}
+          readinessProbe:
+            httpGet: {path: /health/ready, port: 8000}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: {path: /health/live, port: 8000}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata: {name: amrutam-api}
+spec:
+  selector: {app: amrutam-api}
+  ports: [{port: 80, targetPort: 8000}]
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata: {name: amrutam-api}
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels: {app: amrutam-api}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: amrutam-worker}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: amrutam-worker}
+  template:
+    metadata:
+      labels: {app: amrutam-worker}
+    spec:
+      automountServiceAccountToken: false
+      securityContext: {runAsNonRoot: true, runAsUser: 1000}
+      containers:
+        - name: worker
+          image: YOUR_REGISTRY/amrutam:YOUR_IMMUTABLE_TAG
+          command: [python, -m, app.worker]
+          envFrom: [{secretRef: {name: amrutam-runtime}}]
+          resources:
+            requests: {cpu: 100m, memory: 128Mi}
+            limits: {cpu: 500m, memory: 256Mi}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: {drop: [ALL]}
